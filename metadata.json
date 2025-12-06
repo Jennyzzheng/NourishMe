@@ -1,0 +1,7 @@
+{
+  "name": "NourishMe",
+  "description": "A chic, modern Traditional Chinese Medicine (TCM) wellness companion that analyzes your face and hands to provide personalized lifestyle and food guidance.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
