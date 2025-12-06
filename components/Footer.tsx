@@ -1,18 +1,25 @@
 import React from 'react';
+import { Language } from '../types';
+import { translations } from '../translations';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  language: Language;
+}
+
+const Footer: React.FC<FooterProps> = ({ language }) => {
+  const t = translations[language].footer;
+
   return (
     <footer className="py-8 px-6 text-center text-stone-400 text-xs">
       <div className="max-w-md mx-auto space-y-2">
         <p>
-          NourishMe is for wellness and educational purposes only.
+          {t.disclaimer1}
         </p>
         <p>
-          This is not medical advice. We do not diagnose, treat, or cure any disease. 
-          Always consult a healthcare professional for medical concerns.
+          {t.disclaimer2}
         </p>
         <p className="mt-4 opacity-50">
-          Powered by Gemini & Ancient Wisdom
+          {t.poweredBy}
         </p>
       </div>
     </footer>

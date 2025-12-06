@@ -11,6 +11,12 @@ export interface ElementalBalance {
   water: number;
 }
 
+export interface Astrology {
+  animal: string;
+  element: string;
+  insight: string;
+}
+
 export interface TcmAnalysis {
   pattern: string;
   visualCues: {
@@ -18,6 +24,7 @@ export interface TcmAnalysis {
     hand: string;
     tongue: string;
   };
+  astrology: Astrology;
   interpretation: string;
   foodRecommendations: Recommendation[];
   drinkRecommendations: Recommendation[];
@@ -32,4 +39,13 @@ export enum UploadType {
   FACE = 'FACE',
   HAND = 'HAND',
   TONGUE = 'TONGUE'
+}
+
+export type Language = 'en' | 'zh';
+
+export interface UserProfile {
+  birthDate: string;
+  birthTime: string;
+  birthPlace: string;
+  currentLocation: string;
 }

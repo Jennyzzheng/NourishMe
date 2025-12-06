@@ -1,28 +1,35 @@
 import React from 'react';
 import { 
-  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
-  BarChart, Bar, XAxis, YAxis, Tooltip, Cell
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
-import { ElementalBalance } from '../types';
+import { ElementalBalance, Language } from '../types';
+import { translations } from '../translations';
 
-interface ChartsProps {
-  elementalBalance: ElementalBalance;
-  yinYangBalance: number;
+interface ElementalRadarProps {
+  data: ElementalBalance;
+  language: Language;
 }
 
-const FIVE_ELEMENTS_DATA = (data: ElementalBalance) => [
-  { subject: 'Wood (Liver)', A: data.wood, fullMark: 100 },
-  { subject: 'Fire (Heart)', A: data.fire, fullMark: 100 },
-  { subject: 'Earth (Spleen)', A: data.earth, fullMark: 100 },
-  { subject: 'Metal (Lung)', A: data.metal, fullMark: 100 },
-  { subject: 'Water (Kidney)', A: data.water, fullMark: 100 },
-];
+interface YinYangBarProps {
+  value: number;
+  language: Language;
+}
 
-export const ElementalRadar: React.FC<{ data: ElementalBalance }> = ({ data }) => {
+export const ElementalRadar: React.FC<ElementalRadarProps> = ({ data, language }) => {
+  const t = translations[language].charts;
+  
+  const chartData = [
+    { subject: t.wood, A: data.wood, fullMark: 100 },
+    { subject: t.fire, A: data.fire, fullMark: 100 },
+    { subject: t.earth, A: data.earth, fullMark: 100 },
+    { subject: t.metal, A: data.metal, fullMark: 100 },
+    { subject: t.water, A: data.water, fullMark: 100 },
+  ];
+
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={FIVE_ELEMENTS_DATA(data)}>
+        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
           <PolarGrid stroke="#e7e5e4" />
           <PolarAngleAxis dataKey="subject" tick={{ fill: '#78716c', fontSize: 10, fontFamily: 'sans-serif' }} />
           <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
@@ -40,17 +47,17 @@ export const ElementalRadar: React.FC<{ data: ElementalBalance }> = ({ data }) =
   );
 };
 
-export const YinYangBar: React.FC<{ value: number }> = ({ value }) => {
+export const YinYangBar: React.FC<YinYangBarProps> = ({ value, language }) => {
+  const t = translations[language].results;
   // Normalize visualization: 0-50 Yin (Blue/Cool), 50-100 Yang (Red/Warm)
   const isYang = value > 50;
-  const color = isYang ? '#fca5a5' : '#93c5fd'; // red-300 or blue-300
   
   return (
     <div className="w-full space-y-2">
       <div className="flex justify-between text-xs uppercase tracking-wider text-stone-500">
-        <span>Yin (Cooling)</span>
-        <span>Balance</span>
-        <span>Yang (Warming)</span>
+        <span>{t.yin}</span>
+        <span>{t.balance}</span>
+        <span>{t.yang}</span>
       </div>
       <div className="relative h-4 bg-stone-200 rounded-full overflow-hidden">
         <div 
@@ -61,7 +68,7 @@ export const YinYangBar: React.FC<{ value: number }> = ({ value }) => {
         <div className="absolute inset-0 opacity-30 bg-gradient-to-r from-blue-300 via-stone-100 to-red-300 pointer-events-none" />
       </div>
       <div className="text-center text-sm font-medium text-stone-600 pt-1">
-        {value < 45 ? "Yin Dominant" : value > 55 ? "Yang Dominant" : "Ideally Balanced"}
+        {value < 45 ? t.yinDominant : value > 55 ? t.yangDominant : t.ideallyBalanced}
       </div>
     </div>
   );

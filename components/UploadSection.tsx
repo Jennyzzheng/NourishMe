@@ -1,27 +1,39 @@
 import React, { useRef } from 'react';
-import { Camera, Upload, CheckCircle2 } from 'lucide-react';
-import { UploadType } from '../types';
+import { Camera, Upload, CheckCircle2, Calendar, Clock, MapPin, Globe } from 'lucide-react';
+import { UploadType, Language, UserProfile } from '../types';
+import { translations } from '../translations';
 
 interface UploadSectionProps {
   faceImage: string | null;
   handImage: string | null;
   tongueImage: string | null;
+  userProfile: UserProfile;
+  onUserProfileChange: (profile: UserProfile) => void;
   onImageSelect: (type: UploadType, base64: string) => void;
   onAnalyze: () => void;
   isAnalyzing: boolean;
+  language: Language;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ 
   faceImage, 
   handImage, 
   tongueImage,
+  userProfile,
+  onUserProfileChange,
   onImageSelect, 
   onAnalyze,
-  isAnalyzing
+  isAnalyzing,
+  language
 }) => {
+  const t = translations[language].upload;
   const faceInputRef = useRef<HTMLInputElement>(null);
   const handInputRef = useRef<HTMLInputElement>(null);
   const tongueInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProfileChange = (field: keyof UserProfile, value: string) => {
+    onUserProfileChange({ ...userProfile, [field]: value });
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, type: UploadType) => {
     const file = event.target.files?.[0];
@@ -39,17 +51,17 @@ const UploadSection: React.FC<UploadSectionProps> = ({
 
   const getLabel = (type: UploadType) => {
     switch (type) {
-        case UploadType.FACE: return "Face";
-        case UploadType.HAND: return "Hand";
-        case UploadType.TONGUE: return "Tongue";
+        case UploadType.FACE: return t.face;
+        case UploadType.HAND: return t.hand;
+        case UploadType.TONGUE: return t.tongue;
     }
   };
 
   const getSubLabel = (type: UploadType) => {
     switch (type) {
-        case UploadType.FACE: return "Natural light, no makeup.";
-        case UploadType.HAND: return "Palm facing camera.";
-        case UploadType.TONGUE: return "Relaxed, stick it out.";
+        case UploadType.FACE: return t.faceSub;
+        case UploadType.HAND: return t.handSub;
+        case UploadType.TONGUE: return t.tongueSub;
     }
   };
 
@@ -93,7 +105,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({
             )}
           </div>
           <div>
-            <h3 className="font-serif text-lg text-stone-700">Scan {getLabel(type)}</h3>
+            <h3 className="font-serif text-lg text-stone-700">{t.scan} {getLabel(type)}</h3>
             <p className="text-xs text-stone-400 mt-1 max-w-[150px] mx-auto">
               {getSubLabel(type)}
             </p>
@@ -103,17 +115,95 @@ const UploadSection: React.FC<UploadSectionProps> = ({
     </div>
   );
 
-  const canAnalyze = faceImage && handImage && tongueImage;
+  const canAnalyze = faceImage && handImage && tongueImage && userProfile.birthDate && userProfile.currentLocation;
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8 animate-fade-in-up">
-      <div className="text-center space-y-3 mb-10">
+      <div className="text-center space-y-3 mb-8">
         <h2 className="text-3xl md:text-4xl font-serif text-stone-800">
-          Let’s read your energy.
+          {t.title}
         </h2>
         <p className="text-stone-500 max-w-lg mx-auto">
-          Upload photos of your face, palm, and tongue. We'll interpret your body's whispers using ancient TCM principles.
+          {t.subtitle}
         </p>
+      </div>
+
+      {/* Profile Inputs */}
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl p-6 shadow-sm border border-stone-100 mb-8">
+        <h3 className="font-serif text-lg text-stone-800 mb-4 flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-sage-600" />
+            {t.profileSection}
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Birth Date */}
+            <div>
+                <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">
+                    {t.birthdayLabel}
+                </label>
+                <div className="relative">
+                    <Calendar className="absolute left-3 top-3 w-4 h-4 text-stone-400" />
+                    <input 
+                        type="date"
+                        value={userProfile.birthDate}
+                        onChange={(e) => handleProfileChange('birthDate', e.target.value)}
+                        className="w-full pl-10 p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-200 text-stone-800"
+                        placeholder={t.birthdayPlaceholder}
+                    />
+                </div>
+            </div>
+
+             {/* Birth Time */}
+             <div>
+                <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">
+                    {t.birthTimeLabel}
+                </label>
+                <div className="relative">
+                    <Clock className="absolute left-3 top-3 w-4 h-4 text-stone-400" />
+                    <input 
+                        type="time"
+                        value={userProfile.birthTime}
+                        onChange={(e) => handleProfileChange('birthTime', e.target.value)}
+                        className="w-full pl-10 p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-200 text-stone-800"
+                        placeholder={t.birthTimePlaceholder}
+                    />
+                </div>
+            </div>
+
+            {/* Birth Place */}
+            <div>
+                <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">
+                    {t.birthPlaceLabel}
+                </label>
+                <div className="relative">
+                    <Globe className="absolute left-3 top-3 w-4 h-4 text-stone-400" />
+                    <input 
+                        type="text"
+                        value={userProfile.birthPlace}
+                        onChange={(e) => handleProfileChange('birthPlace', e.target.value)}
+                        className="w-full pl-10 p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-200 text-stone-800"
+                        placeholder={t.birthPlacePlaceholder}
+                    />
+                </div>
+            </div>
+
+             {/* Current Location */}
+             <div>
+                <label className="block text-xs font-medium text-stone-500 mb-1 uppercase tracking-wider">
+                    {t.currentLocationLabel}
+                </label>
+                <div className="relative">
+                    <MapPin className="absolute left-3 top-3 w-4 h-4 text-stone-400" />
+                    <input 
+                        type="text"
+                        value={userProfile.currentLocation}
+                        onChange={(e) => handleProfileChange('currentLocation', e.target.value)}
+                        className="w-full pl-10 p-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-200 text-stone-800"
+                        placeholder={t.currentLocationPlaceholder}
+                    />
+                </div>
+            </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -136,7 +226,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({
             }
           `}
         >
-          {isAnalyzing ? 'Reading Vital Signs...' : 'Analyze My Qi'}
+          {isAnalyzing ? t.analyzingButton : t.analyzeButton}
         </button>
       </div>
     </div>
